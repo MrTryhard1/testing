@@ -1,24 +1,108 @@
-<html lang="en" >
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  ‹meta charset="UTF-8">
-  ‹meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  ‹meta name="viewport" content="width=device-width, initial-scale=1.0"›
-  ‹link rel="stylesheet" href="styles.css"›
-  ‹title>Drawing app</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Art Canvas</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+
+    #canvas {
+      border: 2px solid #000;
+      margin-top: 20px;
+      cursor: crosshair;
+      background-color: white;
+    }
+
+    .controls {
+      margin: 20px;
+    }
+
+    button, input[type="color"] {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
 </head>
-‹body>
-  «section class="container"›
-    ‹div id="toolbar">
-      <h1>Draw. </h1>
-      ‹ label for="stroke">Stroke‹/label>
-      ‹ input id="stroke" name='stroke' type="color"›
-      < label for="lineWidth">Line Width‹/label>
-    <input id="lineWidth" name='lineWidth' type="number" value="5"›
-  ‹button id="clear"›Clear</button>
-</div>
-«div class="drawing-board" >
-‹canvas id="drawing-board"›</ canvas>
-</div›
-</ section>
+<body>
+  <h1>🎨 Art Canvas</h1>
+
+  <div class="controls">
+    <label for="colorPicker">Choose Color:</label>
+    <input type="color" id="colorPicker" value="#000000" />
+    
+    <label for="lineWidth">Brush Size:</label>
+    <input type="range" id="lineWidth" min="1" max="20" value="5" />
+
+    <button onclick="clearCanvas()">Clear</button>
+    <button onclick="saveCanvas()">Download</button>
+  </div>
+
+  <canvas id="canvas" width="800" height="500"></canvas>
+
+  <div class="footer">Made with ❤️ using HTML5 Canvas</div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+
+    function startPosition(e) {
+      painting = true;
+      draw(e);
+    }
+
+    function endPosition() {
+      painting = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!painting) return;
+
+      ctx.lineWidth = document.getElementById('lineWidth').value;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = document.getElementById('colorPicker').value;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function saveCanvas() {
+      const link = document.createElement('a');
+      link.download = 'my_artwork.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // Event Listeners
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('mouseup', endPosition);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseleave', endPosition);
+  </script>
 </body>
-</htm1>
+</html>
